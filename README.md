@@ -1,1 +1,1 @@
-# AlgebraicAndTranscendentalEquationSolving
+# Algebraic And Transcendental Equation Solving

@@ -1,3 +1,10 @@
+/*Program to solve Algebraic and Transcendental
+Equations by Bisection Method. This program requires 
+C++11 or newer compiler.
+
+Author: Afif Al Mamun
+Date: January 16, 2018.*/
+
 #include <iostream>
 #include <stdio.h>
 #include <vector>
@@ -16,6 +23,9 @@ typedef struct Node
 	string function;
 	int exponential;
 } node;
+
+/*This function will manipulate the inputted equation in
+several parts and return them as a vector.*/
 
 vector<node> equationManipulator(string equation)
 {
@@ -78,6 +88,9 @@ vector<node> equationManipulator(string equation)
 	return nodes;
 }
 
+/*This function will calculate the value of the equation in 
+double number for a certain value.*/
+
 double function(vector<node> eqs, double value)
 {
 	double res = 0.0;
@@ -137,6 +150,11 @@ double function(vector<node> eqs, double value)
 
 	return res;
 }
+
+/*This is the method where Bisection is applied. It requires the manipulated
+equation as vector, tolerance, two ranges r1, r2 for which function(r1)*function(r2) < 0
+and after several steps of calculation it will return the root as a double number.
+It can calculate upto 10 decimal degits.*/
 
 double bisectionMethod(vector<node> vc, double tolerance, double r1, double r2)
 {

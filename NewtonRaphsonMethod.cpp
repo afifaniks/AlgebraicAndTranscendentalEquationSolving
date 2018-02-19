@@ -1,9 +1,11 @@
-/*Program to solve Algebraic and Transcendental
+/*Starting with the name of Almighty Allah, the most merciful, glorious!
+This program is written to solve Algebraic and Transcendental
 Equations by Bisection Method. This program requires 
 C++11 or newer compiler.
 
-Author: Afif Al Mamun
-Date: January 16, 2018.*/
+Author: Afif Al Mamun, MD Jewel
+Date: January 19, 2018.
+*/
 
 #include <iostream>
 #include <stdio.h>
@@ -11,8 +13,9 @@ Date: January 16, 2018.*/
 #include <string>
 #include <algorithm>
 #include <sstream>
-#include <math.h>
 #include <iomanip>
+#include <math.h>
+#include <cmath>
 
 using namespace std;
 
@@ -23,9 +26,6 @@ typedef struct Node
 	string function;
 	int exponential;
 } node;
-
-/*This function will manipulate the inputted equation in
-several parts and return them as a vector.*/
 
 vector<node> equationManipulator(string equation)
 {
@@ -88,9 +88,6 @@ vector<node> equationManipulator(string equation)
 	return nodes;
 }
 
-/*This function will calculate the value of the equation in 
-double number for a certain value.*/
-
 double function(vector<node> eqs, double value)
 {
 	double res = 0.0;
@@ -151,77 +148,71 @@ double function(vector<node> eqs, double value)
 	return res;
 }
 
-/*This is the method where Bisection is applied. It requires the manipulated
-equation as vector, tolerance, two ranges r1, r2 for which function(r1)*function(r2) < 0
-and after several steps of calculation it will return the root as a double number.
-It can calculate upto 10 decimal degits.*/
+/*Here is the algorithm of N-R method.
+This function's parameters are the main function and its derivative as a vector and
+the tolerance as well as a chosen value(picked) between the range*/
 
-double bisectionMethod(vector<node> vc, double tolerance, double r1, double r2)
+double NRmethod(vector<node> vc1, vector<node> vc2, double tolerance, double pick)
 {
 	double range1, range2;
 
-	if(function(vc, r1) < 0.00)
-	{
-		range1 = r1;
-		range2 = r2;
-	}
-	else
-	{
-		range1 = r2;
-		range2 = r1;
-	}
+	double value1 = (pick - (function(vc1, pick) / function(vc2, pick)));
+	double value2 = (value1 - (function(vc1, value1) / function(vc2, value1)));
 
-	double rn = (range1 + range2)/2.0000000000;
-
-	while(true)
+	while (true)
 	{
-		if(fabs((range1 - range2)/rn) < tolerance)
+
+		if (fabs(value2 - value1) < tolerance)
 			break;
 
-		if(function(vc, rn) < 0.00)
-		{
-			range1 = rn;
-		}
 		else
-			range2 = rn;
-		
-		rn = (range1 + range2)/2.00000000000;
-		
+		{
+			value1 = value2;
+			value2 = (value1 - (function(vc1, value1) / function(vc2, value1)));
+		}
 	}
-
-	return rn;
+	return value2;
 }
 
 int main()
 {
 	string equation;
+	string derivative;
 	double tol, range1, range2;
-	cout<<"-----Bisection Method-----\n";
-	cout<<"[Supported Functions: x^n, e^nx, sin(nx), cos(nx), tan(nx)]\n";
-	cout<<"*KEEP A SPACE BEFORE EACH OPERATOR*\n";
-	cout<<"*FOR EX: ax^m -nsin(x) +pe^q -c\n";
 
-	cout<<"Input Equation: ";
+	cout << "\t\t\t\t-----#Newton Raphson Method#-----\n";
+	cout << "\t\t[Supported Functions: x^n, e^nx, sin(nx), cos(nx), tan(nx)]\n";
+	cout << "\t\t*KEEP A SPACE BEFORE EACH OPERATOR*\n";
+	cout << "\t\t\n\n\t\t\t**EX: ax^m -nsin(x) +pe^q -c\n";
+
+	cout << "\nInput Equation: ";
 	getline(cin, equation);
 
-	cout<<"Input Tolerance: ";
-	cin>>tol;
+	cout << "The equation's 1st derivative:  ";
+	getline(cin, derivative);
 
-	cout<<"Give two ranges: ";
-	cin>>range1>>range2;
+	cout << "Input Tolerance: ";
+	cin >> tol;
 
-	
-	vector<node> vc = equationManipulator(equation);
+	cout << "Give two ranges: ";
+	cin >> range1 >> range2;
 
-	while(function(vc, range1)*function(vc, range2) >= 0)
+	double pick; // a number in the range
+
+	vector<node> vc1 = equationManipulator(equation);
+	vector<node> vc2 = equationManipulator(derivative);
+
+	while (function(vc1, range1) * function(vc1, range2) >= 0)
 	{
-		cout<<"Wrong assumption! Input again: ";
-		cin>>range1>>range2;
+		cout << "Wrong assumption! Input again: ";
+		cin >> range1 >> range2;
 	}
 
-	double root = bisectionMethod(vc, tol, range1, range2);
+	cout << "Pick any number in the range: " << endl;
+	cin >> pick;
 
-	cout<<"\nA root between "<<range1<<" & "<<range2<<" is ";
-	cout<<setprecision(10)<<root<<".\n";
+	double root = NRmethod(vc1, vc2, tol, pick);
 
+	cout << "\nA root between " << range1 << " & " << range2 << " is ";
+	cout << setprecision(10) << root << ".\n";
 }

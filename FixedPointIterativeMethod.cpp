@@ -1,9 +1,9 @@
 /*Program to solve Algebraic and Transcendental
-Equations by Bisection Method. This program requires 
+Equations by Fixed Point Iterative Method. This program requires 
 C++11 or newer compiler.
 
 Author: Afif Al Mamun
-Date: January 16, 2018.*/
+Date: January 19, 2018.*/
 
 #include <iostream>
 #include <stdio.h>
@@ -151,58 +151,44 @@ double function(vector<node> eqs, double value)
 	return res;
 }
 
-/*This is the method where Bisection is applied. It requires the manipulated
-equation as vector, tolerance, two ranges r1, r2 for which function(r1)*function(r2) < 0
-and after several steps of calculation it will return the root as a double number.
+/*This is the method where Fixed Point Iteration is applied. It requires the manipulated
+equation of phi(x) as a vector, tolerance and a value between valid range.
+And after several steps of calculation it will return the root as a double number.
+Here the secondValue will be the root lastly.
 It can calculate upto 10 decimal degits.*/
 
-double bisectionMethod(vector<node> vc, double tolerance, double r1, double r2)
+double fixedPoint(vector<node> vc, double tolerance, double init)
 {
-	double range1, range2;
+    double firstValue = function(vc, init);
 
-	if(function(vc, r1) < 0.00)
-	{
-		range1 = r1;
-		range2 = r2;
-	}
-	else
-	{
-		range1 = r2;
-		range2 = r1;
-	}
+    double secondValue = function(vc, firstValue);
 
-	double rn = (range1 + range2)/2.0000000000;
+    while(fabs(secondValue - firstValue) >= tolerance)
+    {
+         firstValue = secondValue;
+         secondValue = function(vc, secondValue);
+    }
 
-	while(true)
-	{
-		if(fabs((range1 - range2)/rn) < tolerance)
-			break;
-
-		if(function(vc, rn) < 0.00)
-		{
-			range1 = rn;
-		}
-		else
-			range2 = rn;
-		
-		rn = (range1 + range2)/2.00000000000;
-		
-	}
-
-	return rn;
+    return secondValue;
 }
 
 int main()
 {
-	string equation;
+    string equation, phiOfX, phiPrOfX;
 	double tol, range1, range2;
-	cout<<"-----Bisection Method-----\n";
+	cout<<"-----Fixed Point Iterative Method-----\n";
 	cout<<"[Supported Functions: x^n, e^nx, sin(nx), cos(nx), tan(nx)]\n";
 	cout<<"*KEEP A SPACE BEFORE EACH OPERATOR*\n";
 	cout<<"*FOR EX: ax^m -nsin(x) +pe^q -c\n";
 
-	cout<<"Input Equation: ";
+	cout<<"Input function f(x): ";
 	getline(cin, equation);
+
+    cout<<"Input functionx phi(x): ";
+    getline(cin, phiOfX);
+
+	cout<<"Input first derivative of function phi(x):";
+    getline(cin, phiPrOfX);
 
 	cout<<"Input Tolerance: ";
 	cin>>tol;
@@ -210,16 +196,17 @@ int main()
 	cout<<"Give two ranges: ";
 	cin>>range1>>range2;
 
-	
-	vector<node> vc = equationManipulator(equation);
+    vector<node> vc = equationManipulator(equation);
+	vector<node> vc2 = equationManipulator(phiOfX);
+	vector<node> vc3 = equationManipulator(phiPrOfX);
 
-	while(function(vc, range1)*function(vc, range2) >= 0)
+    while((function(vc, range1)*function(vc, range2) >= 0) || function(vc3, range1) >= 1 ||function(vc3, range2) >= 1)
 	{
 		cout<<"Wrong assumption! Input again: ";
 		cin>>range1>>range2;
 	}
 
-	double root = bisectionMethod(vc, tol, range1, range2);
+	double root = fixedPoint(vc2, tol, (range1 + range2)/2.000);
 
 	cout<<"\nA root between "<<range1<<" & "<<range2<<" is ";
 	cout<<setprecision(10)<<root<<".\n";
